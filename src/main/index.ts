@@ -1,15 +1,9 @@
-import {
-	app,
-	shell,
-	BrowserWindow,
-	ipcMain,
-	contextBridge,
-	ipcRenderer,
-} from 'electron';
+import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import { createEvents, eventMap } from './BaileysCommunication';
+import { installIwacBackEnd } from './BaileysCommunication/installIwacBackEnd';
 
 function createWindow() {
 	// Create the browser window.
@@ -63,9 +57,14 @@ app.whenReady().then(() => {
 	});
 
 	const window = createWindow();
+
 	const { emitTestEvent } = createEvents(window);
 
-	setInterval(emitTestEvent, 1500);
+	installIwacBackEnd(window);
+
+	setInterval(() => {
+		emitTestEvent();
+	}, 2000);
 
 	app.on('activate', function () {
 		// On macOS it's common to re-create a window in the app when the

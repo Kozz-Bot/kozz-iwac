@@ -19,6 +19,42 @@ const expose = (key: string, value: any) => {
 expose('electron', electronAPI);
 expose('api', api);
 
-contextBridge.exposeInMainWorld('onTestEvent', callback =>
-	ipcRenderer.on('testEv', (_event, value) => callback(value))
+let evIndex = 0;
+
+contextBridge.exposeInMainWorld('onEvent', ({ evName, callback }) => {
+	const evId = `${evName}-${evIndex++}`;
+
+	const handler = (_event, value) => {
+		if (evName === value.name) {
+			callback(value.data);
+		}
+	};
+
+	handler.evId = evId;
+
+	ipcRenderer.on(evName, handler);
+
+	return evId;
+});
+
+contextBridge.exposeInMainWorld('offEvent', (evId: string) => {
+	const [evType] = evId.split('-');
+
+	const handler = ipcRenderer
+		.listeners(evType)
+		//@ts-ignore
+		.find(handler => handler.evId === evId);
+	if (!handler) {
+		return;
+	}
+
+	//@ts-ignore
+	ipcRenderer.removeListener(evType, handler);
+});
+
+contextBridge.exposeInMainWorld(
+	'sendEvent',
+	(evType: string, evName: string, data: any) => {
+		ipcRenderer.send(evType, { name: evName, data });
+	}
 );

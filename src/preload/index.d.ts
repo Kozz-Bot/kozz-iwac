@@ -1,11 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
 import { EventArgs } from '../main/BaileysCommunication';
 
-type EventHandler<EvName extends keyof EventArgs> =
-	EventArgs[EvName] extends undefined
-		? (name: EvName) => any
-		: (name: EvName, args: EventArgs[EvName]) => any;
-
 declare global {
 	interface Window {
 		electron: ElectronAPI & {
@@ -16,10 +11,15 @@ declare global {
 				) => any;
 			};
 		};
+
 		sendEvent: <EvName extends keyof EventArgs>(
 			...args: EventArgs[EvName] extends undefined
-				? [evName: EvName]
-				: [evName: EvName, args: EventArgs[EvName]]
+				? [evType: string, evName: EvName]
+				: [evType: string, evName: EvName, EventArgs[EvName]]
 		) => any;
+
+		onEvent: (evData: { evName: string; callback: (data: any) => void }) => string;
+
+		offEvent: (evId: string) => void;
 	}
 }
