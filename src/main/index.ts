@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
-import { createEvents, eventMap } from './BaileysCommunication';
+import { eventMap } from './BaileysCommunication';
 import { installIwacBackEnd } from './BaileysCommunication/installIwacBackEnd';
 
 function createWindow() {
@@ -58,13 +58,15 @@ app.whenReady().then(() => {
 
 	const window = createWindow();
 
-	const { emitTestEvent } = createEvents(window);
-
 	installIwacBackEnd(window);
 
+	window.webContents.openDevTools();
+
 	setInterval(() => {
-		emitTestEvent();
-	}, 2000);
+		window.webContents.send('testEv', {
+			data: 'taskdjhasd',
+		});
+	}, 1500);
 
 	app.on('activate', function () {
 		// On macOS it's common to re-create a window in the app when the

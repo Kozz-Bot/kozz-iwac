@@ -25,9 +25,7 @@ contextBridge.exposeInMainWorld('onEvent', ({ evName, callback }) => {
 	const evId = `${evName}-${evIndex++}`;
 
 	const handler = (_event, value) => {
-		if (evName === value.name) {
-			callback(value.data);
-		}
+		callback(value);
 	};
 
 	handler.evId = evId;

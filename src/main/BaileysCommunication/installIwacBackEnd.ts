@@ -14,7 +14,13 @@ export const executeBashCommand = (
 	if (process.stdout) {
 		process.stdout.on('data', data => {
 			console.log(data);
-			handleStdout(data);
+			if (typeof data === 'string') {
+				data.split('\\n').forEach(line => {
+					handleStdout(data);
+				});
+			} else {
+				handleStdout(data);
+			}
 		});
 	}
 

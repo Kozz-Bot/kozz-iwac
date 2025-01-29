@@ -1,3 +1,4 @@
+import TerminalView from '@renderer/components/TerminalView';
 import { Routes } from '@renderer/context/NavigationContext';
 import { useNavigation } from '@renderer/hooks/UseNavigation';
 import Home from '@renderer/screens/Home';
@@ -15,7 +16,12 @@ const Router = () => {
 
 	const Component = routeMap[getRoute()];
 
-	return <Component />;
+	return (
+		<>
+			<TerminalView />
+			<Component />
+		</>
+	);
 };
 
 export default Router;
