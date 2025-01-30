@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import { eventMap } from './BaileysCommunication';
 import { installIwacBackEnd } from './BaileysCommunication/installIwacBackEnd';
+import keytar from 'keytar';
 
 function createWindow() {
 	// Create the browser window.
@@ -67,6 +68,14 @@ app.whenReady().then(() => {
 			data: 'taskdjhasd',
 		});
 	}, 1500);
+
+	setTimeout(async () => {
+		const payload = await keytar.getPassword('kozz-iwac', 'introduction');
+
+		console.log({ payload });
+
+		window.webContents.send('kozzIwacIntroduction', JSON.parse(payload!));
+	}, 3000);
 
 	app.on('activate', function () {
 		// On macOS it's common to re-create a window in the app when the

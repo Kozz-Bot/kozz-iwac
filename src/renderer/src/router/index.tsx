@@ -13,7 +13,6 @@ const routeMap: {
 
 const Router = () => {
 	const { getRoute } = useNavigation();
-
 	const Component = routeMap[getRoute()];
 
 	return (

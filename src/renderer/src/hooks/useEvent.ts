@@ -3,16 +3,14 @@ import { EventArgs } from 'src/main/BaileysCommunication';
 
 export const listenEvent = (evName: string, callback: (data: any) => void) => {
 	useEffect(() => {
-		console.log('listening to event, ', evName);
 		const evId = window.onEvent({
 			evName,
 			callback,
 		});
-
-		console.log(evId);
+		console.log('listening to event', evId);
 
 		return () => {
-			console.log('stopped listening to event, ', evName, evId);
+			console.log('stopped listening to event', evId);
 			window.offEvent(evId);
 		};
 	}, []);

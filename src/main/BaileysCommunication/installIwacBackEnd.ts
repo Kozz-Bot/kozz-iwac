@@ -10,13 +10,12 @@ export const executeBashCommand = (
 ) => {
 	const process = exec(`${command} ${args.join(' ')}`);
 
-	console.log({ process });
 	if (process.stdout) {
 		process.stdout.on('data', data => {
-			console.log(data);
 			if (typeof data === 'string') {
 				data.split('\\n').forEach(line => {
-					handleStdout(data);
+					// console.log(`FROM SCRIPT>${data}<`);
+					handleStdout(line);
 				});
 			} else {
 				handleStdout(data);

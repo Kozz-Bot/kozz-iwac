@@ -38,6 +38,8 @@ contextBridge.exposeInMainWorld('onEvent', ({ evName, callback }) => {
 contextBridge.exposeInMainWorld('offEvent', (evId: string) => {
 	const [evType] = evId.split('-');
 
+	console.log('removing listener for evId', evId);
+
 	const handler = ipcRenderer
 		.listeners(evType)
 		//@ts-ignore

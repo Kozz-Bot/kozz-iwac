@@ -1,3 +1,4 @@
+import { ChatContext } from './context/ChatContext';
 import { NavigationContext } from './context/NavigationContext';
 import { WindowContext } from './context/WindowContext';
 import Router from './router';
@@ -9,7 +10,9 @@ function App(): JSX.Element {
 	return (
 		<NavigationContext.Provider>
 			<WindowContext.Provider>
-				<Router />
+				<ChatContext.Provider>
+					<Router />
+				</ChatContext.Provider>
 			</WindowContext.Provider>
 		</NavigationContext.Provider>
 	);
