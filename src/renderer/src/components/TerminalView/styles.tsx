@@ -5,11 +5,11 @@ export const Container = styled.div<{ open: boolean }>`
 	position: absolute;
 	flex-direction: column;
 	height: 100%;
-	width: 600px;
+	width: 80vw;
 	transition: all 0.2s;
 	background-color: red;
 
-	left: ${({ open }) => (open ? '0px' : '-600px')};
+	left: ${({ open }) => (open ? '0px' : '-80vw')};
 	overflow: scroll;
 `;
 

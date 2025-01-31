@@ -2,7 +2,7 @@ import { createContext } from '.';
 
 export const RouteMap = {
 	home: null,
-	settings: null,
+	chat: null,
 };
 
 export type Routes = typeof RouteMap;

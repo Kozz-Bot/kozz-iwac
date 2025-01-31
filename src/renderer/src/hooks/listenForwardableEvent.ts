@@ -1,6 +1,7 @@
 import { ForwardableEvent, ForwardedEvent } from '@renderer/models/Kozz';
 import { useChat } from './useChat';
 import { useCallback, useEffect } from 'react';
+import { ChatContext } from '@renderer/context/ChatContext';
 
 /**
  * Listens to a forwardable event. Automatically request the forwarding of
@@ -12,7 +13,9 @@ export const useForwardableEvent = <EventName extends keyof ForwardableEvent>(
 	evName: EventName,
 	handler: (data: ForwardedEvent<EventName>['payload']) => any
 ) => {
-	const { addEventHandler, removeEventHandler, emitEvent } = useChat();
+	const [chat] = ChatContext.useContext();
+
+	const { addEventHandler, emitEvent } = useChat();
 
 	const forwardableEventHandler = useCallback((event: ForwardedEvent<EventName>) => {
 		console.log(event);
@@ -24,19 +27,19 @@ export const useForwardableEvent = <EventName extends keyof ForwardableEvent>(
 	}, []);
 
 	useEffect(() => {
+		if (!chat.ready) {
+			return;
+		}
+
 		emitEvent('event_forward_request', {
 			sourceId: 'kozz-baileys',
 			eventName: evName,
 			destination: {
 				id: 'kozz-iwac',
-				type: 'module',
+				type: 'Handler',
 			},
 		});
 
 		const _evHandler = addEventHandler('forwarded_event', forwardableEventHandler);
-
-		return () => {
-			removeEventHandler('forwarded_event', _evHandler);
-		};
-	}, []);
+	}, [chat.ready]);
 };

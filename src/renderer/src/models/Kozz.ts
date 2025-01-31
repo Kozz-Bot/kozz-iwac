@@ -9,6 +9,7 @@ export type Introduction_Ack =
 
 export type ForwardableEvent = {
 	qrcode: string;
+	chatready: undefined;
 };
 
 export type ForwardedEvent<ForwardedEvName extends keyof ForwardableEvent = any> = {

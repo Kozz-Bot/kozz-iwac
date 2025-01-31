@@ -14,7 +14,7 @@ export const executeBashCommand = (
 		process.stdout.on('data', data => {
 			if (typeof data === 'string') {
 				data.split('\\n').forEach(line => {
-					// console.log(`FROM SCRIPT>${data}<`);
+					console.log(`${data}`);
 					handleStdout(line);
 				});
 			} else {

@@ -63,16 +63,8 @@ app.whenReady().then(() => {
 
 	window.webContents.openDevTools();
 
-	setInterval(() => {
-		window.webContents.send('testEv', {
-			data: 'taskdjhasd',
-		});
-	}, 1500);
-
 	setTimeout(async () => {
 		const payload = await keytar.getPassword('kozz-iwac', 'introduction');
-
-		console.log({ payload });
 
 		window.webContents.send('kozzIwacIntroduction', JSON.parse(payload!));
 	}, 3000);

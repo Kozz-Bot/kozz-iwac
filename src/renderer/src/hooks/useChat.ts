@@ -1,5 +1,10 @@
 import { io } from 'socket.io-client';
-import { EventDispatchMap, EventMap, Introduction_Ack } from '@renderer/models/Kozz';
+import {
+	EventDispatchMap,
+	EventMap,
+	ForwardedEvent,
+	Introduction_Ack,
+} from '@renderer/models/Kozz';
 import { ChatContext } from '@renderer/context/ChatContext';
 import { Introduction } from 'kozz-types';
 
@@ -7,6 +12,10 @@ export const useChat = () => {
 	const [chat, setChat] = ChatContext.useContext();
 
 	const init = async (payload: Introduction) => {
+		if (chat.socket) {
+			return;
+		}
+
 		let socket = io('ws://localhost:4521');
 
 		socket.on('connect', () => {
@@ -20,6 +29,7 @@ export const useChat = () => {
 				console.log(`[CHAT]: CONNECTED`);
 				setChat({
 					socket: socket,
+					ready: true,
 				});
 			}
 		});
@@ -30,7 +40,15 @@ export const useChat = () => {
 				init(payload);
 			} else {
 				console.error('[SOCKET DISCONNECTED]', { reason, details });
+				setChat({
+					socket: null,
+					ready: false,
+				});
 			}
+		});
+
+		socket.on('forwarded_event', (event: ForwardedEvent) => {
+			console.log('FORWARDED EVENT', event);
 		});
 	};
 
@@ -38,7 +56,7 @@ export const useChat = () => {
 		eventName: EventName,
 		handler: (payload: EventMap[EventName]) => any
 	) => {
-		console.log('ADDING HANDLER FOR EVENT', eventName);
+		console.log('ADDING HANDLER FOR EVENT', eventName, chat);
 		chat.socket?.on(eventName as string, handler!);
 		return handler;
 	};
@@ -47,7 +65,7 @@ export const useChat = () => {
 		eventName: EventName,
 		handler: (payload: EventMap[EventName]) => any
 	) => {
-		console.log('REMOVING HANDLER FOR EVENT ' + eventName, { handler });
+		console.log('REMOVING HANDLER FOR EVENT ' + eventName, handler);
 		chat.socket?.off(eventName as string, handler);
 		return handler;
 	};
@@ -58,7 +76,13 @@ export const useChat = () => {
 		return chat.socket?.listeners(eventName) as EventMap[EventName][];
 	};
 
-	const disconnect = () => chat.socket?.disconnect();
+	const disconnect = () => {
+		chat.socket?.disconnect();
+		setChat({
+			socket: null,
+			ready: false,
+		});
+	};
 
 	const emitEvent = <EventName extends keyof EventDispatchMap>(
 		eventName: EventName,
@@ -66,7 +90,6 @@ export const useChat = () => {
 	) => {
 		chat.socket?.emit(eventName, payload);
 	};
-
 	return {
 		getEventHandler,
 		addEventHandler,
